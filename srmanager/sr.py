@@ -30,7 +30,7 @@ class SR():
         self.srm = client.Client(config=self.config)
 
         # init networkx
-        self.graph = nx.Graph()
+        self.graph = nx.DiGraph()
         
     def get_property(self, dic, name, default):
         ''''get property'''
@@ -66,7 +66,7 @@ class SR():
     def get_topology(self):
         ''''get a new topology and add to a graph and return'''
         # Allocate new graph
-        g = nx.Graph()
+        g = nx.DiGraph()
 
         # Grab the toplogy from the controller
         topology = self.tm.get_topology()
@@ -152,3 +152,21 @@ class SR():
         '''get the sid from the openflow id'''
         id = int(ofid[ofid.index(':')+1:])
         return self.srgb_start + id
+
+    def graphs_equal(self, g1, g2):
+        '''test if two graphs are the same'''
+
+        for n in g1:
+            if n in g2:
+                for l in g1[n]:
+                    if l in g2[n]:
+                        if g1[n][l] != g2[n][l]:
+                            return False
+                    else:
+                        return False
+            else:
+                return False
+
+        return True
+
+
