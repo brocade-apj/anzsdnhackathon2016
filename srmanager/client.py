@@ -323,11 +323,11 @@ class Client():
         if not egress_port.startswith("openflow:"):
             egress_port=egress_switch+":"+egress_port
 
-        ip_label = 1001
+        ip_label = str(sid.get_sid(ingress_switch)) + "010" + str(kwargs['service']['ingress_port'])
         if 'ip_label' in kwargs['service']:
             ip_label = kwargs['service']['ip_label']
 
-        arp_label =1002
+        arp_label = str(sid.get_sid(ingress_switch)) + "020" + str(kwargs['service']['ingress_port'])
         if 'arp_label' in kwargs['service']:
             arp_label = kwargs['service']['arp_label']
 

@@ -328,8 +328,8 @@ class Shell(object):
         parser.add_argument('-p', '--ingress_port', metavar = "<INGRESS_PORT>", required=True)
         parser.add_argument('-e', '--egress_switch', metavar = "<EGRESS_SWITCH>", required=True)
         parser.add_argument('-l', '--egress_port', metavar = "<EGRESS_PORT>", required=True)
-        parser.add_argument('-x', '--ip_label', metavar = "<IP_LABEL>", required=True)
-        parser.add_argument('-y', '--arp_label', metavar = "<ARP_LABEL>", required=True)
+        parser.add_argument('-x', '--ip_label', metavar = "<IP_LABEL>", required=False)
+        parser.add_argument('-y', '--arp_label', metavar = "<ARP_LABEL>", required=False)
         parser.add_argument('-w', '--waypoint', nargs='*', metavar = "<WAYPOINT>", required=False)
         parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
 
