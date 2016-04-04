@@ -9,6 +9,8 @@ from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, Timeout
 
 
+LOG = logging.getLogger(__name__)
+
 #-------------------------------------------------------------------------------
 # Class 'Controller'
 #-------------------------------------------------------------------------------
@@ -97,11 +99,11 @@ class Controller():
                                 timeout=timeout)
         if resp is not None:
             if resp.status_code == 200:
-                logging.debug("found {}".format(url))
+                LOG.debug("found {}".format(url))
             elif resp.status_code == 404:
-                logging.debug("not found {}".format(url))
+                LOG.debug("not found {}".format(url))
             else:
-                logging.error("error getting {} message {}".format(url,resp.content))
+                LOG.error("error getting {} message {}".format(url,resp.content))
 
 
         return (resp)
@@ -134,9 +136,9 @@ class Controller():
 
         if resp is not None:
             if resp.status_code == 204:
-                logging.debug("added {} {}".format(url,data))
+                LOG.debug("added {} {}".format(url,data))
             else:
-                logging.error("error posting {} data {} message {}".format(url,data,resp.content))
+                LOG.error("error posting {} data {} message {}".format(url,data,resp.content))
 
         return (resp)
 
@@ -168,9 +170,9 @@ class Controller():
 
         if resp is not None:
             if resp.status_code == 200:
-                logging.debug("added {} {}".format(url,data))
+                LOG.debug("added {} {}".format(url,data))
             else:
-                logging.error("error posting {} data {} message {}".format(url,data,resp.content))
+                LOG.error("error posting {} data {} message {}".format(url,data,resp.content))
 
         return (resp)
 
@@ -202,11 +204,11 @@ class Controller():
 
         if resp is not None:
             if resp.status_code == 200:
-                logging.debug("delete {}".format(url))
+                LOG.debug("delete {}".format(url))
             elif resp.status_code == 404:
-                logging.debug("delete {}".format(url))
+                LOG.debug("delete {}".format(url))
             else:
-                logging.error("error posting {} message {}".format(url,resp.content))
+                LOG.error("error posting {} message {}".format(url,resp.content))
         return (resp)
 
     def get_base_url(self):
