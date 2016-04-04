@@ -100,6 +100,14 @@ class SR():
                     edge += ({ 'source-tp': srctp },)
                     logging.debug('edge added to graph: {}'.format(edge))
                     g.add_edge(*edge)
+
+                    edge = (link['destination']['dest-node'],
+                            link['source']['source-node'])
+                    srctp = link['destination']['dest-tp']
+                    edge += ({ 'source-tp': srctp },)
+                    logging.debug('edge added to graph: {}'.format(edge))
+                    if not g.has_edge(link['destination']['dest-node'],link['source']['source-node']):
+                        g.add_edge(*edge)
         else:
             logging.info("No links found in topology")
 
@@ -150,14 +158,14 @@ class SR():
 
     def add_sr_flows(self, graph):
         '''add sr flows'''
-                
+
         logging.debug("Add SR Flows")
 
         # Spin thru each node and set the flows
         logging.debug("Adding flows for each node")
         for snode in graph:
             self.add_sr_flows_for_node(graph, snode)
-        
+
     def del_sr_flow(self, node, tnode):
         '''delete sr flow'''
 
@@ -187,14 +195,14 @@ class SR():
 
     def del_sr_flows(self, graph):
         '''delete all sr flows that we know of'''
-                
+
         logging.debug("Delete SR flows")
 
         # Spin thru each node and del the flows
         logging.debug("Delete flows for each node")
         for snode in graph:
             del_sr_flows_for_node(graph, snode)
-        
+
     def del_all_flows(self, graph):
         '''Delete all flows in a graph'''
 
@@ -280,4 +288,3 @@ class SR():
 
         id = int(ofid[ofid.index(':')+1:])
         return self.srgb_start + id
-
