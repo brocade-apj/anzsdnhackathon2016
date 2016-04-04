@@ -20,7 +20,7 @@ FLOW_SERVICE_PRIORITY=1000
 FLOW_SR_PRIORITY=2000
 FLOW_GO_TO_SR_PRIORITY=100
 
-SR_TABLE=0
+SR_TABLE=1
 
 LOG = logging.getLogger(__name__)
 
@@ -135,7 +135,7 @@ class Client():
         payload = { "flow-node-inventory:flow": [
                     {
                         "id": id,
-                        "table_id": 0,
+                        "table_id": SR_TABLE,
                         "hard-timeout": 0,
                         "priority": FLOW_SR_PRIORITY,
                         "idle-timeout": 0,
