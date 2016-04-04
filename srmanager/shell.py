@@ -31,6 +31,8 @@ class Shell(object):
                      "\n   del-flow              Delete a flow"
                      "\n   add-service           Add a service"
                      "\n   del-service           Delete a service"
+                     "\n   add-goto-sr           Add a default flow goto sr table"
+                     "\n   del-goto-sr           Delete default flow goto sr table"
                      "\n"
                      "\n  '%(prog)s help <command>' provides details for a specific command")
 
@@ -279,6 +281,30 @@ class Shell(object):
 
 
     #---------------------------------------------------------------------------
+    # add flows
+    #---------------------------------------------------------------------------
+    @connects
+    def del_goto_sr(self, arguments):
+
+        # parse agurments
+        parser = argparse.ArgumentParser(
+            prog=self.prog,
+            usage="%(prog)s add-flow\n\n"
+                  "add a flow to sr manager\n\n"
+                  "Options:\n"
+                  "  -n, --name                         switch name (format: openflow:1)\n"
+                  )
+        parser.add_argument('-n', '--name', metavar = "<NAME>", required=True)
+        parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
+
+        args = parser.parse_args(arguments)
+        if(args.usage):
+            parser.print_usage()
+            print "\n".strip()
+
+        self.sr.delete_goto_sr_flow(args.name)
+
+    #---------------------------------------------------------------------------
     # add service
     #---------------------------------------------------------------------------
     @connects
@@ -302,8 +328,8 @@ class Shell(object):
         parser.add_argument('-p', '--ingress_port', metavar = "<INGRESS_PORT>", required=True)
         parser.add_argument('-e', '--egress_switch', metavar = "<EGRESS_SWITCH>", required=True)
         parser.add_argument('-l', '--egress_port', metavar = "<EGRESS_PORT>", required=True)
-        parser.add_argument('-x', '--ip_label', metavar = "<IP_LABEL>", required=True)
-        parser.add_argument('-y', '--arp_label', metavar = "<ARP_LABEL>", required=True)
+        parser.add_argument('-x', '--ip_label', metavar = "<IP_LABEL>", required=False)
+        parser.add_argument('-y', '--arp_label', metavar = "<ARP_LABEL>", required=False)
         parser.add_argument('-w', '--waypoint', nargs='*', metavar = "<WAYPOINT>", required=False)
         parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
 
