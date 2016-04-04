@@ -81,7 +81,7 @@ class Client():
 
         """
 
-        if not id.startswith("sra-"):
+        if not id.startswith("src-"):
             id = "src-" + id
 
         resp = self.ctrl.http_get_request(
@@ -207,7 +207,7 @@ class Client():
 
         ## it the id belongs to the client
         ## append prefix
-        if not id.startswith("sr"):
+        if not id.startswith("src"):
             id = "src-"+id
 
         resp = self.ctrl.http_delete_request(
