@@ -178,7 +178,7 @@ class Shell(object):
             penultimate=True
 
         flow = {
-            'name':args.name,
+            'switch_id':args.name,
             'label':args.label,
             'port':args.port,
             'penultimate':args.penultimate,
@@ -252,6 +252,30 @@ class Shell(object):
         else:
             print "flows not removed from {}".format(args.name)
 
+
+    #---------------------------------------------------------------------------
+    # add flows
+    #---------------------------------------------------------------------------
+    @connects
+    def add_goto_sr(self, arguments):
+
+        # parse agurments
+        parser = argparse.ArgumentParser(
+            prog=self.prog,
+            usage="%(prog)s add-flow\n\n"
+                  "add a flow to sr manager\n\n"
+                  "Options:\n"
+                  "  -n, --name                         switch name (format: openflow:1)\n"
+                  )
+        parser.add_argument('-n', '--name', metavar = "<NAME>", required=True)
+        parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
+
+        args = parser.parse_args(arguments)
+        if(args.usage):
+            parser.print_usage()
+            print "\n".strip()
+
+        self.sr.add_goto_sr_flow(args.name)
 
 
     #---------------------------------------------------------------------------

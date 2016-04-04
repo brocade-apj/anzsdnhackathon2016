@@ -91,6 +91,57 @@ class Client():
                         return transfor_flow_sr(name,flows['flow-node-inventory:flow'][0])
         return None
 
+    def add_goto_sr_flow(self, name):
+        """ Add go to table 1 to process sr rules
+
+        @param name: switch name to get
+        @return: response keywords (see add_flow for description)
+
+        """
+
+        id = "srgoto-table-1"
+
+        payload = { "flow-node-inventory:flow": [
+                    {
+                        "id": id,
+                        "table_id": 0,
+                        "hard-timeout": 0,
+                        "priority": FLOW_GO_TO_SR_PRIORITY,
+                        "idle-timeout": 0,
+                        "instructions": {
+                            "instruction": [
+                                {
+                                    "order":0,
+                                    "go-to-table":{
+                                        "table_id":1
+                                    }
+                                }
+                            ]
+                        },
+                        "match": {
+                            "ethernet-match": {
+                                "ethernet-type": {
+                                    "type": 34887
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+
+        resp = self.ctrl.http_put_request(
+                 self.ctrl.get_config_url()+
+                 "/opendaylight-inventory:nodes/node/{}/table/0/flow/{}".format(name,id)
+                 ,json.dumps(payload))
+
+        # Check response
+        if resp is not None:
+            if (resp.status_code == 200):
+                return self.get_flow(name,id)
+
+        return None
+
+
     def add_flow(self, **kwargs):
         """ Add or create a flow via Segment Routing Manager.
 
@@ -113,12 +164,17 @@ class Client():
         """
 
         # Make call to Segment Routing Manager
-        name = kwargs['flow']['name']
+        name = kwargs['flow']['switch_id']
+
         label = kwargs['flow']['label']
         port = kwargs['flow']['port']
         penultimate = kwargs['flow']['penultimate']
 
-        id = "sr-" + name + "-" + str(port) + "-" + str(label)
+        if 'id' in kwargs['flow']:
+            id = "src-" + id
+        else:
+            id = "sra-" + name + "-" + str(port) + "-" + str(label)
+
 
         payload = { "flow-node-inventory:flow": [
                     {
@@ -601,6 +657,11 @@ def transfor_flow_sr(name,flow):
         'id':flow['id'],
         'name': name
     }
+
+    ## if we receive the id given by the user
+    ## return the id as given by the client
+    if r['id'].startswith("src-"):
+        r['id'] = r['id'].replace("src-","")
 
     if ('match' in flow
         and 'protocol-match-fields' in flow['match']
