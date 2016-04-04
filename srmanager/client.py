@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import logging
 import xmltodict
 import sr
 from requests.auth import HTTPBasicAuth
@@ -20,6 +21,8 @@ FLOW_SR_PRIORITY=2000
 FLOW_GO_TO_SR_PRIORITY=100
 
 SR_TABLE=0
+
+LOG = logging.getLogger(__name__)
 
 #-------------------------------------------------------------------------------
 # Class 'Client'
@@ -332,11 +335,12 @@ class Client():
         if not egress_port.startswith("openflow:"):
             egress_port=egress_switch+":"+egress_port
 
-        ip_label = str(sid.get_sid(ingress_switch)) + "010" + str(kwargs['service']['ingress_port'])
+        switch_id = ingress_switch[ingress_switch.index(':')+1:]
+        ip_label = switch_id + "88" + str(kwargs['service']['ingress_port'])
         if 'ip_label' in kwargs['service']:
             ip_label = kwargs['service']['ip_label']
 
-        arp_label = str(sid.get_sid(ingress_switch)) + "020" + str(kwargs['service']['ingress_port'])
+        arp_label = switch_id + "99" + str(kwargs['service']['ingress_port'])
         if 'arp_label' in kwargs['service']:
             arp_label = kwargs['service']['arp_label']
 
@@ -390,12 +394,6 @@ class Client():
                                                 }
                                             }
                                         ]
-                                    }
-                                },
-                                {
-                                    "order":1,
-                                    "go-to-table":{
-                                        "table_id":1
                                     }
                                 }
                             ]
