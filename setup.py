@@ -14,6 +14,9 @@ setup(
     license='LICENSE',
     install_requires=[
         'networkx>=1.11',
+        'xmltodict>=0.10.1',
+        'websocket',
+        'websocket-client',
     ]
 )
 

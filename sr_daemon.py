@@ -24,7 +24,7 @@ srm.add_sr_flows(top)
 
 # Now wait for topology changes
 while True:
-    srm.listen_to_topology(graph)
+    srm.listen_to_topology()
 
     # Update the old flows
     logging.info("Updating Topology")
