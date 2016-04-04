@@ -19,6 +19,8 @@ FLOW_SERVICE_PRIORITY=1000
 FLOW_SR_PRIORITY=2000
 FLOW_GO_TO_SR_PRIORITY=100
 
+SR_TABLE=0
+
 #-------------------------------------------------------------------------------
 # Class 'Client'
 #-------------------------------------------------------------------------------
@@ -52,7 +54,7 @@ class Client():
         """ get flows from Segment Routing Manager """
         resp = self.ctrl.http_get_request(
                    self.ctrl.get_config_url()
-                        + "/opendaylight-inventory:nodes/node/{}/table/1".format(name))
+                        + "/opendaylight-inventory:nodes/node/{}/table/{}".format(name,SR_TABLE))
 
         if resp is not None:
             if resp.status_code == 200:
@@ -76,9 +78,12 @@ class Client():
 
         """
 
+        if not id.startswith("sra-"):
+            id = "src-" + id
+
         resp = self.ctrl.http_get_request(
                    self.ctrl.get_config_url()
-                   + "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id))
+                   + "/opendaylight-inventory:nodes/node/{}/table/{}/flow/{}".format(name,SR_TABLE,id))
 
         if resp is not None:
             if resp.status_code == 200:
@@ -177,7 +182,7 @@ class Client():
 
         resp = self.ctrl.http_put_request(
                  self.ctrl.get_config_url()+
-                 "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id)
+                 "/opendaylight-inventory:nodes/node/{}/table/{}/flow/{}".format(name,SR_TABLE,id)
                  ,json.dumps(payload))
 
         # Check response
@@ -204,7 +209,7 @@ class Client():
 
         resp = self.ctrl.http_delete_request(
                    self.ctrl.get_config_url()+
-                   "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id))
+                   "/opendaylight-inventory:nodes/node/{}/table/{}/flow/{}".format(name,SR_TABLE,id))
 
         return self.get_flow(name,id)
 
@@ -450,12 +455,6 @@ class Client():
                                             }
                                         ]
                                     }
-                                },
-                                {
-                                    "order":1,
-                                    "go-to-table":{
-                                        "table_id":1
-                                    }
                                 }
                             ]
                         },
@@ -473,10 +472,13 @@ class Client():
 
         order_action=4
 
+        latest_label = sid.get_sid(egress_switch)
+
         ## Add waypoints
         for waypoint in reversed(waypoints):
             if waypoint.startswith("openflow:"):
                 waypoint=sid.get_sid(waypoint)
+                latest_label=waypoint
 
             order_action = order_action + 1
             push_mpls = {
@@ -500,6 +502,44 @@ class Client():
             ingress_ip['flow-node-inventory:flow'][0]['instructions']['instruction'][0]['apply-actions']['action'].append(set_mpls)
             ingress_arp['flow-node-inventory:flow'][0]['instructions']['instruction'][0]['apply-actions']['action'].append(set_mpls)
 
+
+        if SR_TABLE > 0 :
+            ingress_ip['flow-node-inventory:flow'][0]['instructions']['instruction'].append(
+                {
+                    "order":1,
+                    "go-to-table":{
+                        "table_id":1
+                    }
+                }
+            )
+            ingress_arp['flow-node-inventory:flow'][0]['instructions']['instruction'].append(
+                {
+                    "order":1,
+                    "go-to-table":{
+                        "table_id":1
+                    }
+                }
+            )
+        else:
+            order_action = order_action + 1
+            flow = self.get_flow(ingress_switch,"flow:{}".format(latest_label))
+            if flow is not None and 'port' in flow:
+                ingress_ip['flow-node-inventory:flow'][0]['instructions']['instruction'][0]['apply-actions']['action'].append(
+                    {
+                        "order": order_action,
+                        "output-action": {
+                            "output-node-connector":flow['port']
+                        }
+                    }
+                )
+                ingress_arp['flow-node-inventory:flow'][0]['instructions']['instruction'][0]['apply-actions']['action'].append(
+                    {
+                        "order": order_action,
+                        "output-action": {
+                            "output-node-connector":flow['port']
+                        }
+                    }
+                )
 
         egress_ip = { "flow-node-inventory:flow": [
                     {
@@ -701,5 +741,7 @@ def transfor_flow_sr(name,flow):
         for action in flow['instructions']['instruction'][0]['apply-actions']['action']:
             if 'pop-mpls-action' in action:
                 r['penultimate']=True
+            if 'output-action' in action and 'output-node-connector' in action['output-action']:
+                r['port']=action['output-action']['output-node-connector']
 
     return r
