@@ -314,6 +314,11 @@ class Client():
         kwargs['service']['ingress_port']=egress_port
         kwargs['service']['egress_switch']=ingress_switch
         kwargs['service']['egress_port']=ingress_port
+        if 'waypoints' in kwargs['service']:
+             waypoints = kwargs['service']['waypoints']
+             kwargs['service']['waypoints'] = []
+             for waypoint in reversed(kwargs['service']['waypoints']):
+                 kwargs['service']['waypoints'].append(waypoint)
         self.add_service_unidirectional(**kwargs)
 
     def add_service_unidirectional(self, **kwargs):
