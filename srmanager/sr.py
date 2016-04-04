@@ -122,16 +122,16 @@ class SR():
                 try:
                     sp = nx.shortest_path(graph, snode, tnode)
                     nexthop = sp[1]
-                    ssid = self.get_sid(snode)
+                    tsid = self.get_sid(tnode)
                     srctp = graph[snode][nexthop]['source-tp']
                     if nexthop == tnode:
                         php = True
                     else:
                         php = False
                     flow = {
-                        'flow_id': 'flow:{}'.format(ssid),
+                        'flow_id': 'flow:{}'.format(tsid),
                         'switch_id': snode,
-                        'label': '{}'.format(ssid),
+                        'label': '{}'.format(tsid),
                         'port': srctp,
                         'penultimate': php
                     }
