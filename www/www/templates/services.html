@@ -1,0 +1,39 @@
+{%extends "base.html"%}
+
+{%block title%}Services{% endblock %}
+
+{%block body%}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1>Services</h1>
+      <p>The following is a list of services within the network</p>
+      <div class="jumbotron">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title pull-left">Service: </h3>
+            <button type="button" class="btn btn-danger pull-right">
+              Delete
+            </button>
+            <div class="clearfix"></div>
+          </div>
+          <div class="panel-body">
+            <dl class="dl-horizontal">
+              <dt>Ingress Switch</dt>
+              <dd>Ingress Switch Value</dd>
+              <dt>Ingress Port</dt>
+              <dd>Ingress Port Value</dd>
+              <dt>Egress Switch</dt>
+              <dd>Egress Switch Value</dd>
+              <dt>Egress Port</dt>
+              <dd>Egress Port Value</dd>
+              <dt>Waypoints</dt>
+              <dd>Waypoints Value</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}

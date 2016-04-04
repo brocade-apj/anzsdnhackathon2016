@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import reqparse, abort, Resource, Api
 from www.extensions import mongo
-# from srmanager.client import Client
+from srmanager.client import Client
 
 api = Api(prefix='/api/v1')  
 
@@ -23,6 +23,7 @@ class Services(Resource):
     parser.add_argument('egress-switch')
     parser.add_argument('ingress-port')
     parser.add_argument('egress-port')
+    parser.add_argument('waypoints')
 
     args = parser.parse_args()
 
@@ -32,12 +33,15 @@ class Services(Resource):
       'egress_switch': args['egress-switch'],
       'egress_port': args['egress-port']
     }
+    if args['waypoints']:
+      service['waypoints'] = args['waypoints']
 
     services = mongo.db.services
     db_id = services.insert_one(service).inserted_id
 
-    srm = Client(config={'ctrlIp': '202.9.5.219', 'ctrlPort': 8181, 'ctrlUser': 'admin', 'ctrlPassword': 'admin'})
-    # srm.add_service(service=service)
+    srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
+    print service
+    srm.add_service(service=service)
 
     service['_id'] = str(service['_id'])
     return service, 201

@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
   $('#waypoints').select2();
 
   $('#sr-wizard').on('finished.fu.wizard', function (e, data) {
-    getFormData();
+    createService();
   });
 });
 
@@ -19,4 +19,11 @@ function getFormData() {
     data[$input.attr('name')] = val
   });
   console.log(data);
+}
+
+function createService() {
+  payload = getFormData();
+  $.post('/api/v1/services', payload, function(data, textStatus, xhr) {
+    console.log(data);
+  }, 'json');
 }
