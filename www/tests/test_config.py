@@ -10,7 +10,6 @@ class TestConfig:
         app = create_app('www.settings.DevConfig')
 
         assert app.config['DEBUG'] is True
-        assert app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:///../database.db'
         assert app.config['CACHE_TYPE'] == 'null'
 
     def test_test_config(self):
@@ -19,7 +18,6 @@ class TestConfig:
         app = create_app('www.settings.TestConfig')
 
         assert app.config['DEBUG'] is True
-        assert app.config['SQLALCHEMY_ECHO'] is True
         assert app.config['CACHE_TYPE'] == 'null'
 
     def test_prod_config(self):
@@ -27,5 +25,4 @@ class TestConfig:
 
         app = create_app('www.settings.ProdConfig')
 
-        assert app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:///../database.db'
         assert app.config['CACHE_TYPE'] == 'simple'
