@@ -6,6 +6,7 @@ import xmltodict
 import sr
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, Timeout
+from websocket import create_connection
 
 from srmanager.controller import Controller
 
@@ -488,7 +489,7 @@ class Client():
                 ]
             }
 
-        order_action=4
+        order_action=3
 
         latest_label = sid.get_sid(egress_switch)
 
@@ -739,6 +740,23 @@ class Client():
         self.ctrl.http_delete_request(
                    self.ctrl.get_config_url()+
                    "/opendaylight-inventory:nodes/node/{}/table/0/flow/{}".format(egress_switch,arp_id))
+
+
+
+    def get_topology_stream(self):
+        streamName = self.ctrl.create_topology_stream()
+        if (streamName is None):
+            return None
+        LOG.info("Stream created, name: {}".format(streamName))
+        streamUrl = self.ctrl.subcribe_stream(streamName)
+        if (streamUrl is None):
+            return None
+        LOG.info("Subscription to stream complete, url: {}".format(streamUrl))
+
+        streamUrl = streamUrl.replace("http:","ws:",1)
+        LOG.info("Subscription to stream replaced, url: {}".format(streamUrl))
+        return create_connection(streamUrl)
+
 
 
 def is_sr_flow(id):

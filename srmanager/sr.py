@@ -11,7 +11,7 @@ logging.basicConfig(filename='sr.log',level=logging.DEBUG)
 
 class SR():
     '''Segment Routing over OpenFlow class'''
-    
+
     def __init__(self, start=16000):
         '''initialise'''
 
@@ -31,7 +31,7 @@ class SR():
 
         # init networkx
         self.graph = nx.DiGraph()
-        
+
     def get_property(self, dic, name, default):
         ''''get property'''
 
@@ -83,15 +83,15 @@ class SR():
                 g.add_node(nid)
         else:
             logging.info("No nodes found in topology")
-            
-        # check for links 
+
+        # check for links
         if 'link' in topology:
-            
+
             # Get all links
             tlinks = topology['link']
             for link in tlinks:
                 if link['link-id'].find('host') == -1:
-                    edge = (link['source']['source-node'], 
+                    edge = (link['source']['source-node'],
                             link['destination']['dest-node'])
                     srctp = link['source']['source-tp']
                     edge += ({ 'source-tp': srctp },)
@@ -104,7 +104,7 @@ class SR():
         return g
 
     def add_sr_flows(self, graph):
-                
+
         # Spin thru each node and set the flows
         logging.debug("Calculate flows for each node")
         for snode in graph:
@@ -140,13 +140,24 @@ class SR():
 
                 except nx.NetworkXNoPath:
                     logging.error("no path for {} to {}".format(snode, tnode))
-        
+
     def del_all_flows(self, graph):
         '''Delete all flows in a graph'''
 
         for node in graph:
             self.srm.delete_flows(node)
             self.srm.delete_goto_sr_flow(node)
+
+    def listen_to_topology(self):
+        ws = self.srm.get_topology_stream()
+        while True:
+            logging.info("Listening on stream for topology change... (ctrl-c to exit)")
+            result =  ws.recv()
+            #print "        Received '%s'" % result
+            logging.info("Change detected, new topology: ")
+            self.add_sr_flows(self.get_topology())
+
+
 
     def get_sid(self, ofid):
         '''get the sid from the openflow id'''
@@ -168,5 +179,3 @@ class SR():
                 return False
 
         return True
-
-
