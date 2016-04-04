@@ -3,17 +3,14 @@
         <div class="steps-container">
             <ul class="steps">
                 <li data-step="1" data-name="service-details" class="active"><span class="badge">1</span>Details<span class="chevron"></span></li>
-                <li data-step="2" data-name="service-review" class="active"><span class="badge">2</span>Review<span class="chevron"></span></li>
             </ul>
         </div>
         <div class="actions">
             <button type="button" class="btn btn-default btn-prev"><span class="glyphicon glyphicon-arrow-left"></span>Prev</button>
-            <button type="button" class="btn btn-default btn-next" data-last="Complete">Next<span class="glyphicon glyphicon-arrow-right"></span></button>
+            <button type="button" class="btn btn-success btn-next" data-last="Complete">Next<span class="glyphicon glyphicon-arrow-right"></span></button>
         </div>
         <div class="step-content">
             {% include "partials/_step1.html" %}
-            <div class="step-pane sample-pane alert" data-step="2">
-            </div>
         </div>
     </div>
 </div>

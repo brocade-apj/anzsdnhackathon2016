@@ -17,6 +17,7 @@ from www.extensions import (
     mongo
 )
 
+from www.controllers.api import api
 
 def create_app(object_name):
     """
@@ -39,6 +40,9 @@ def create_app(object_name):
 
     # conntect to mongodb
     mongo.init_app(app)
+
+    # initialise the api
+    api.init_app(app)
 
     # Import and register the different asset bundles
     assets_env.init_app(app)
