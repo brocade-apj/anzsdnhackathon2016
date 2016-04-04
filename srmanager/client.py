@@ -15,6 +15,10 @@ class SrManagerClientException(Exception):
     def __str__(self):
         return repr(self.msg)
 
+FLOW_SERVICE_PRIORITY=1000
+FLOW_SR_PRIORITY=2000
+FLOW_GO_TO_SR_PRIORITY=100
+
 #-------------------------------------------------------------------------------
 # Class 'Client'
 #-------------------------------------------------------------------------------
@@ -114,14 +118,14 @@ class Client():
         port = kwargs['flow']['port']
         penultimate = kwargs['flow']['penultimate']
 
-        id = "sr-" + name + "-" + port + "-" + label
+        id = "sr-" + name + "-" + str(port) + "-" + str(label)
 
         payload = { "flow-node-inventory:flow": [
                     {
                         "id": id,
                         "table_id": 0,
                         "hard-timeout": 0,
-                        "priority": 32767,
+                        "priority": FLOW_SR_PRIORITY,
                         "idle-timeout": 0,
                         "instructions": {
                             "instruction": [
@@ -266,7 +270,7 @@ class Client():
                         "id": ip_id,
                         "table_id": 0,
                         "hard-timeout": 0,
-                        "priority": 32767,
+                        "priority": FLOW_SERVICE_PRIORITY,
                         "idle-timeout": 0,
                         "instructions": {
                             "instruction": [
@@ -330,7 +334,7 @@ class Client():
                         "id": arp_id,
                         "table_id": 0,
                         "hard-timeout": 0,
-                        "priority": 32767,
+                        "priority": FLOW_SERVICE_PRIORITY,
                         "idle-timeout": 0,
                         "instructions": {
                             "instruction": [
@@ -368,7 +372,7 @@ class Client():
                                             }
                                         ]
                                     }
-                                },                                
+                                },
                                 {
                                     "order":1,
                                     "go-to-table":{
@@ -424,7 +428,7 @@ class Client():
                         "id": ip_id,
                         "table_id": 0,
                         "hard-timeout": 0,
-                        "priority": 32767,
+                        "priority": FLOW_SERVICE_PRIORITY,
                         "idle-timeout": 0,
                         "instructions": {
                             "instruction": [
@@ -468,7 +472,7 @@ class Client():
                         "id": arp_id,
                         "table_id": 0,
                         "hard-timeout": 0,
-                        "priority": 32767,
+                        "priority": FLOW_SERVICE_PRIORITY,
                         "idle-timeout": 0,
                         "instructions": {
                             "instruction": [
