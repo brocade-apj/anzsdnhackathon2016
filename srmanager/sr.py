@@ -1,5 +1,4 @@
 import json
-import httplib2
 import networkx as nx
 import sys
 import os

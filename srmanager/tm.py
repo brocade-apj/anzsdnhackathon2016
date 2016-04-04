@@ -3,15 +3,10 @@
 #
 
 import json
-import httplib2
-import networkx as nx
 import os
 import sys
 import yaml
 from srmanager.controller import Controller 
-
-h = httplib2.Http(".cache")
-h.add_credentials('admin', 'admin')
 
 class TopologyManager():
     '''Topology Manager Class'''
