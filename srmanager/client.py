@@ -197,6 +197,11 @@ class Client():
 
         """
 
+        ## it the id belongs to the client
+        ## append prefix
+        if not id.startswith("sr"):
+            id = "src-"+id
+
         resp = self.ctrl.http_delete_request(
                    self.ctrl.get_config_url()+
                    "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id))
