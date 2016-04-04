@@ -29,6 +29,8 @@ class Shell(object):
                      "\n   add-flow              Add a flow"
                      "\n   del-flows             Delete all flows"
                      "\n   del-flow              Delete a flow"
+                     "\n   add-service           Add a service"
+                     "\n   del-service           Delete a service"
                      "\n"
                      "\n  '%(prog)s help <command>' provides details for a specific command")
 
@@ -142,7 +144,7 @@ class Shell(object):
 
 
     #---------------------------------------------------------------------------
-    # get flows
+    # add flows
     #---------------------------------------------------------------------------
     @connects
     def add_flow(self, arguments):
@@ -250,6 +252,97 @@ class Shell(object):
         else:
             print "flows not removed from {}".format(args.name)
 
+
+
+    #---------------------------------------------------------------------------
+    # add service
+    #---------------------------------------------------------------------------
+    @connects
+    def add_service(self, arguments):
+
+        # parse agurments
+        parser = argparse.ArgumentParser(
+            prog=self.prog,
+            usage="%(prog)s add-flow\n\n"
+                  "add a service\n\n"
+                  "Options:\n"
+                  "  -i, --ingress_switch               ingress switch (format: openflow:1)\n"
+                  "  -p, --ingress_port                 ingress port (format: 1)\n"
+                  "  -e, --egress_switch                ingress switch (format: openflow:1)\n"
+                  "  -l, --egress_port                  ingress port (format: 1)\n"
+                  "  -x, --ip_label                     ip label number\n"
+                  "  -y, --arp_label                    arp label number\n"
+                  "  -w, --waypoint                     waypoint list (optional)\n"
+                  )
+        parser.add_argument('-i', '--ingress_switch', metavar = "<INGRESS_SWITCH>", required=True)
+        parser.add_argument('-p', '--ingress_port', metavar = "<INGRESS_PORT>", required=True)
+        parser.add_argument('-e', '--egress_switch', metavar = "<EGRESS_SWITCH>", required=True)
+        parser.add_argument('-l', '--egress_port', metavar = "<EGRESS_PORT>", required=True)
+        parser.add_argument('-x', '--ip_label', metavar = "<IP_LABEL>", required=True)
+        parser.add_argument('-y', '--arp_label', metavar = "<ARP_LABEL>", required=True)
+        parser.add_argument('-w', '--waypoint', nargs='*', metavar = "<WAYPOINT>", required=False)
+        parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
+
+        args = parser.parse_args(arguments)
+        if(args.usage):
+            parser.print_usage()
+            print "\n".strip()
+
+
+        service = {
+            'ingress_switch':args.ingress_switch,
+            'ingress_port':args.ingress_port,
+            'egress_switch':args.egress_switch,
+            'egress_port':args.egress_port
+        }
+
+        if args.ip_label:
+            service['ip_label']=args.ip_label
+        if args.arp_label:
+            service['arp_label']=args.arp_label
+        if args.waypoint:
+            service['waypoints']=args.waypoint
+
+        result = self.sr.add_service(service=service)
+
+
+    #---------------------------------------------------------------------------
+    # add service
+    #---------------------------------------------------------------------------
+    @connects
+    def del_service(self, arguments):
+
+        # parse agurments
+        parser = argparse.ArgumentParser(
+            prog=self.prog,
+            usage="%(prog)s add-flow\n\n"
+                  "add a flow to sr manager\n\n"
+                  "Options:\n"
+                  "  -i, --ingress_switch               ingress switch (format: openflow:1)\n"
+                  "  -p, --ingress_port                 ingress port (format: 1)\n"
+                  "  -e, --egress_switch                ingress switch (format: openflow:1)\n"
+                  "  -l, --egress_port                  ingress port (format: 1)\n"
+                  )
+        parser.add_argument('-i', '--ingress_switch', metavar = "<INGRESS_SWITCH>", required=True)
+        parser.add_argument('-p', '--ingress_port', metavar = "<INGRESS_PORT>", required=True)
+        parser.add_argument('-e', '--egress_switch', metavar = "<EGRESS_SWITCH>", required=True)
+        parser.add_argument('-l', '--egress_port', metavar = "<EGRESS_PORT>", required=True)
+        parser.add_argument('-U', action="store_true", dest="usage", help=argparse.SUPPRESS)
+
+        args = parser.parse_args(arguments)
+        if(args.usage):
+            parser.print_usage()
+            print "\n".strip()
+
+
+        service = {
+            'ingress_switch':args.ingress_switch,
+            'ingress_port':args.ingress_port,
+            'egress_switch':args.egress_switch,
+            'egress_port':args.egress_port
+        }
+
+        result = self.sr.delete_service(service=service)
 
 #-------------------------------------------------------------------------------
 # common functions
