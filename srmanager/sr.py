@@ -147,6 +147,7 @@ class SR():
 
         for node in graph:
             self.srm.delete_flows(node)
+            self.srm.delete_goto_sr_flow(node)
 
     def get_sid(self, ofid):
         '''get the sid from the openflow id'''
