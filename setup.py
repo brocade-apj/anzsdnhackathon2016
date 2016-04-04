@@ -9,7 +9,6 @@ setup(
     author_email='craig@brocade.com',
     packages=[
         'srmanager',
-        'sroof',
     ],
     description='Segment Routing over OpenFlow',
     license='LICENSE',

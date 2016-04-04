@@ -2,7 +2,7 @@ import os
 import json
 import requests
 import xmltodict
-import sroof.sid
+import sr
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, Timeout
 
@@ -285,7 +285,7 @@ class Client():
 
         """
 
-        sid = sroof.sid.SID()
+        sid = sr.SID()
 
         ingress_switch = kwargs['service']['ingress_switch']
         if not ingress_switch.startswith("openflow:"):

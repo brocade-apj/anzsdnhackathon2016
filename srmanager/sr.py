@@ -3,25 +3,23 @@ import httplib2
 import networkx as nx
 import sys
 import os
-import sid
 import tm
 import logging
-from srmanager.client import Client as srmclient
-
-# Segment Routing class
-sr = sid.SID()
+import client
 
 # Setup logging
-logging.basicConfig(filename='sroof.log',level=logging.DEBUG)
+logging.basicConfig(filename='sr.log',level=logging.DEBUG)
 
-class SRoOF():
+class SR():
     '''Segment Routing over OpenFlow class'''
     
-    def __init__(self):
+    def __init__(self, start=16000):
         '''initialise'''
 
-
         logging.info("Initialising Segment Routing over OpenFlow")
+
+        # Set the starting SR Block
+        self.srgb_start = start
 
         # Get controller config
         self.config = self.get_config("ctrl.yml")
@@ -30,7 +28,7 @@ class SRoOF():
         self.tm = tm.TopologyManager(config=self.config)
 
         # Grab SRManager
-        self.srm = srmclient(config=self.config)
+        self.srm = client.Client(config=self.config)
 
         # init networkx
         self.graph = nx.Graph()
@@ -106,12 +104,16 @@ class SRoOF():
         # return the new graph
         return g
 
-    def add_flows(self, graph):
+    def add_sr_flows(self, graph):
                 
         # Spin thru each node and set the flows
         logging.debug("Calculate flows for each node")
         for snode in graph:
             logging.debug("Rules for " + snode)
+
+            # Add low priority goto to SR flow
+            self.srm.add_goto_sr_flow(snode)
+
             for tnode in graph:
                 # add rule for every other node (i.e. not us)
                 if snode == tnode:
@@ -121,14 +123,15 @@ class SRoOF():
                 try:
                     sp = nx.shortest_path(graph, snode, tnode)
                     nexthop = sp[1]
-                    ssid = sr.get_sid(snode)
+                    ssid = self.get_sid(snode)
                     srctp = graph[snode][nexthop]['source-tp']
                     if nexthop == tnode:
                         php = True
                     else:
                         php = False
                     flow = {
-                        'name': 'flow:{}'.format(ssid),
+                        'flow_id': 'flow:{}'.format(ssid),
+                        'switch_id': snode,
                         'label': '{}'.format(ssid),
                         'port': srctp,
                         'penultimate': php
@@ -139,4 +142,13 @@ class SRoOF():
                 except nx.NetworkXNoPath:
                     logging.error("no path for {} to {}".format(snode, tnode))
         
+    def del_all_flows(self, graph):
+        '''Delete all flows in a graph'''
 
+        for node in graph:
+            self.srm.delete_flows(node)
+
+    def get_sid(self, ofid):
+        '''get the sid from the openflow id'''
+        id = int(ofid[ofid.index(':')+1:])
+        return self.srgb_start + id
