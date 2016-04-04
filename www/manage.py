@@ -9,7 +9,7 @@ from www import create_app
 # default to dev config because no one should use this in
 # production anyway
 env = os.environ.get('WWW_ENV', 'dev')
-app = create_app('www.settings.%sConfig' % env.capitalize(), env=env)
+app = create_app('www.settings.%sConfig' % env.capitalize())
 
 manager = Manager(app)
 manager.add_command("server", Server())
