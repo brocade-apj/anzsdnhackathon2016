@@ -10,3 +10,5 @@ top = srm.get_topology()
 
 srm.del_all_flows(top)
 srm.add_sr_flows(top)
+
+srm.listen_to_topology()

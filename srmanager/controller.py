@@ -220,3 +220,50 @@ class Controller():
 
     def get_config_url(self):
         return self.get_base_url() + "/config"
+
+
+
+    def create_topology_stream(self):
+        # This calls RESTConf api to create a stream for notifications about changes
+        #     in the topology in the operational data store
+        # RETURNS: stream's url or None if fail
+        url = self.get_base_url() + '/operations/sal-remote:create-data-change-event-subscription'
+
+        headers = {'content-type': 'application/xml',
+                    'accept': 'application/json'}
+
+        payload = '<input xmlns="urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote"> \
+                        <path xmlns:a="urn:TBD:params:xml:ns:yang:network-topology">/a:network-topology</path> \
+                        <datastore xmlns="urn:sal:restconf:event:subscription">OPERATIONAL</datastore> \
+                        <scope xmlns="urn:sal:restconf:event:subscription">SUBTREE</scope> \
+                    </input>'
+
+        r = requests.post(url, data=payload, headers=headers, auth=HTTPBasicAuth(self.config['username'], self.config['password']))
+
+        streamName = r.text
+        #print streamName
+
+        if ('error' in streamName):
+            print "Error: " + streamName
+            return None
+        else:
+            streamName = r.json()
+            streamName = streamName['output']
+            streamName = streamName['stream-name']
+            return streamName
+
+    def subcribe_stream(self,streamName):
+        # This calls the RESTConf api to suscribe to the stream at streamName
+        # INPUT:
+        #    rConfBaseUrl - base url at which RestConf calls may be made - example:  http://192.168.56.101:8181/restconf
+        #    user - the user name with which to authenticate - example: admin
+        #    password - the password with which to authenticate - example - admin
+        #    streamName - name of stream with which to subscribe (streamName is returned from creating it)
+        # RETURNS: stream's url at which to listen with web socket
+        url = self.get_base_url() + '/streams/stream/' + streamName
+        #print url
+        headers = {'content-type': 'application/json',
+                    'accept': 'application/json'}
+        r = requests.get(url, headers=headers, auth=HTTPBasicAuth(self.config['username'], self.config['password']))
+        streamListenUrl = r.headers['location']
+        return streamListenUrl

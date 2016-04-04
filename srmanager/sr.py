@@ -11,7 +11,7 @@ import client
 
 class SR():
     '''Segment Routing over OpenFlow class'''
-    
+
     def __init__(self, start=16000):
         '''initialise'''
 
@@ -31,7 +31,7 @@ class SR():
 
         # init networkx
         self.graph = nx.DiGraph()
-        
+
     def get_property(self, dic, name, default):
         ''''get property'''
 
@@ -86,15 +86,15 @@ class SR():
                 g.add_node(nid)
         else:
             logging.info("No nodes found in topology")
-            
-        # check for links 
+
+        # check for links
         if 'link' in topology:
-            
+
             # Get all links
             tlinks = topology['link']
             for link in tlinks:
                 if link['link-id'].find('host') == -1:
-                    edge = (link['source']['source-node'], 
+                    edge = (link['source']['source-node'],
                             link['destination']['dest-node'])
                     srctp = link['source']['source-tp']
                     edge += ({ 'source-tp': srctp },)
@@ -204,6 +204,12 @@ class SR():
             self.srm.delete_flows(node)
             self.srm.delete_goto_sr_flow(node)
 
+    def listen_to_topology(self):
+        ws = self.srm.get_topology_stream()
+        logging.info("Listening on stream for topology change... (ctrl-c to exit)")
+        result =  ws.recv()
+        logging.info("Change detected, new topology: ")
+
     def topology_equal(self, g1, g2):
         '''test if two graphs are the same'''
 
@@ -220,10 +226,13 @@ class SR():
 
         return True
 
-    def update_sr_flows(self, old, new):
+    def update_sr_flows(self, old):
         '''update flows with new graph'''
 
         logging.debug("Updating SR flows")
+
+        # grab new flows
+        new = self.srm.get_topology()
 
         # Spin through nodes in the old topology
         for n in old:
@@ -262,6 +271,9 @@ class SR():
         for n in new:
             if n not in old:
                 self.add_sr_flows_for_node(graph, n)
+
+        # return new topology
+        return new
 
     def get_sid(self, ofid):
         '''get the sid from the openflow id'''

@@ -5,10 +5,6 @@
 import time
 import srmanager.sr
 import logging
-import signal
-
-def handler(signum, frame):
-    logging.info("got signal: {}".format(signum))
 
 # Setup logging
 logging.basicConfig(filename='sr.log',level=logging.INFO)
@@ -17,27 +13,22 @@ logging.info("SR Daemon starting")
 # get SR class
 srm = srmanager.sr.SR()
 
-# Handle signals
-signal.signal(signal.SIGUSR1, handler)
-
 # grab the latest topology
-old = srm.get_topology()
+top = srm.get_topology()
 
 # start with a clean slate, delete all flows
-srm.del_all_flows(old)
+srm.del_all_flows(top)
 
 # now add sr flows
-srm.add_sr_flows(old)
+srm.add_sr_flows(top)
 
-# Now just check the toplogy every 60 secs
-running = True
-while running:
-    time.sleep(60)
-    new = srm.get_topology()
+# Now wait for topology changes
+while True:
+    srm.listen_to_topology(graph)
 
     # Update the old flows
     logging.info("Updating Topology")
-    srm.update_sr_flows(old, new)
+    top = srm.update_sr_flows(top)
 
 logging.info("SR Daemon finished")
 
