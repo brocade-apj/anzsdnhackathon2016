@@ -2,11 +2,15 @@ import json
 import httplib2
 import networkx as nx
 import sys
+import sid
 
 # Topology Manager URLs
 baseUrl = 'http://127.0.0.1:8181/restconf/operational/'
 nettop = 'network-topology:network-topology/'
 id = 'topology/flow:1/'
+
+# Segment Routing class
+sr = sid.SID()
 
 h = httplib2.Http(".cache")
 h.add_credentials('admin', 'admin')
