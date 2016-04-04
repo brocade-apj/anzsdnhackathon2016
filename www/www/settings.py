@@ -13,6 +13,10 @@ class DevConfig(Config):
     CACHE_TYPE = 'null'
     ASSETS_DEBUG = True
 
+    MONGO_HOST = "192.168.99.100"
+    MONGO_PORT = 32768
+    MONGO_DBNAME = 'dev_sr'
+
 
 class TestConfig(Config):
     ENV = 'test'

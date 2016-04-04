@@ -53,11 +53,15 @@ class Client():
         if resp is not None:
             if resp.status_code == 200:
                 flows = json.loads(resp.content)
+                r=[]
                 if ('flow-node-inventory:table' in flows
                     and len(flows['flow-node-inventory:table']) >0
                     and 'flow' in flows['flow-node-inventory:table'][0]):
-                    ## TODO transform flows to the same parameters that we ask on input
-                    return flows['flow-node-inventory:table'][0]['flow']
+
+                    for flow in flows['flow-node-inventory:table'][0]['flow']:
+                        if is_sr_flow(flow['id']):
+                            r.append(transfor_flow_sr(name,flow))
+                return r
         return None
 
     def get_flow(self, name, id):
@@ -78,9 +82,9 @@ class Client():
                 if ('flow-node-inventory:flow' in flows
                         and len(flows['flow-node-inventory:flow'])>0
                     ):
-                    ## TODO transform flows to the same parameters that we ask on input
-                    return flows['flow-node-inventory:flow'][0]
 
+                    if is_sr_flow(flows['flow-node-inventory:flow'][0]['id']):
+                        return transfor_flow_sr(name,flows['flow-node-inventory:flow'][0])
         return None
 
     def add_flow(self, **kwargs):
@@ -199,10 +203,40 @@ class Client():
 
         """
 
-        resp = self.ctrl.http_delete_request(
-                   self.ctrl.get_config_url()+
-                   "/opendaylight-inventory:nodes/node/{}/table/0".format(name))
+        flows = self.get_flows(name)
+        if flows is not None:
+            for flow in flows:
+                self.delete_flow(name, flow['id'])
 
-        if resp.status_code == 200 or resp.status_code == 404:
-            return None
-        return []
+        return None
+
+
+def is_sr_flow(id):
+    if id is not None and id.startswith('sr'):
+        return True
+    return False
+
+def transfor_flow_sr(name,flow):
+    r = {
+        'id':flow['id'],
+        'name': name
+    }
+
+    if ('match' in flow
+        and 'protocol-match-fields' in flow['match']
+        and 'mpls-label' in flow['match']['protocol-match-fields']
+        ):
+        r['label']=flow['match']['protocol-match-fields']['mpls-label']
+
+    if ('instructions' in flow
+        and 'instruction' in flow['instructions']
+        and len(flow['instructions']['instruction']) > 0
+        and 'apply-actions' in flow['instructions']['instruction'][0]
+        and 'action' in flow['instructions']['instruction'][0]['apply-actions']
+        and len(flow['instructions']['instruction'][0]['apply-actions']['action'])>0
+        ):
+        for action in flow['instructions']['instruction'][0]['apply-actions']['action']:
+            if 'pop-mpls-action' in action:
+                r['penultimate']=True
+
+    return r

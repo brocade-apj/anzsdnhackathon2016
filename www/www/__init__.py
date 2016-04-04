@@ -13,7 +13,8 @@ from www import assets
 
 from www.extensions import (
     cache,
-    assets_env
+    assets_env,
+    mongo
 )
 
 
@@ -35,6 +36,9 @@ def create_app(object_name):
 
     # initialize the cache
     cache.init_app(app)
+
+    # conntect to mongodb
+    mongo.init_app(app)
 
     # Import and register the different asset bundles
     assets_env.init_app(app)
