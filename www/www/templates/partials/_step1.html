@@ -1,0 +1,27 @@
+<div class="step-pane active sample-pane alert" data-step="1">
+    {% with device_type="ingress" %}
+        {% include "partials/_device_panel.html" %}
+    {% endwith %}
+    {% with device_type="egress" %}
+        {% include "partials/_device_panel.html" %}
+    {% endwith %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Waypoints</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-hoizontal">
+                <div class="form-group">
+                    <label for="waypoints" class="col-sm-2 control-label">Nodes</label>
+                    <div class="col-sm-10">
+                        <select name="waypoints" id="waypoints" class="form-control" multiple="multiple">
+                            <option value="">-- Select One --</option>
+                            <option value="">-- Select Two --</option>
+                            <option value="">-- Select Three --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
