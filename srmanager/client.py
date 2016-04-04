@@ -302,7 +302,7 @@ class Client():
 
         """
 
-        sid = sr.SID()
+        sid = sr.SR()
 
         ingress_switch = kwargs['service']['ingress_switch']
         if not ingress_switch.startswith("openflow:"):
