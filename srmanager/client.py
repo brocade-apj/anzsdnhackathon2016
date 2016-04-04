@@ -301,7 +301,22 @@ class Client():
             return None
         return {'id':id}
 
+
     def add_service(self, **kwargs):
+        self.add_service_unidirectional(**kwargs)
+
+        #add the service in the other direction
+        ingress_switch = kwargs['service']['ingress_switch']
+        ingress_port = kwargs['service']['ingress_port']
+        egress_switch = kwargs['service']['egress_switch']
+        egress_port = kwargs['service']['egress_port']
+        kwargs['service']['ingress_switch']=egress_switch
+        kwargs['service']['ingress_port']=egress_port
+        kwargs['service']['egress_switch']=ingress_switch
+        kwargs['service']['egress_port']=ingress_port
+        self.add_service_unidirectional(**kwargs)
+
+    def add_service_unidirectional(self, **kwargs):
         """ Add or create a flow via Segment Routing Manager.
 
         @param id: ingress switch name
@@ -658,7 +673,21 @@ class Client():
         return None
 
 
-    def delete_service(self,**kwargs):
+    def delete_service(self, **kwargs):
+        self.delete_service_unidirectional(**kwargs)
+
+        #add the service in the other direction
+        ingress_switch = kwargs['service']['ingress_switch']
+        ingress_port = kwargs['service']['ingress_port']
+        egress_switch = kwargs['service']['egress_switch']
+        egress_port = kwargs['service']['egress_port']
+        kwargs['service']['ingress_switch']=egress_switch
+        kwargs['service']['ingress_port']=egress_port
+        kwargs['service']['egress_switch']=ingress_switch
+        kwargs['service']['egress_port']=ingress_port
+        self.delete_service_unidirectional(**kwargs)
+
+    def delete_service_unidirectional(self,**kwargs):
         """ Delete a flow via Segment Routing Manager.
 
         @param name: name of switch name
