@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 import argparse
 import requests
 import xmltodict
@@ -92,8 +93,16 @@ class Controller():
         resp = requests.get(url,
                                 auth=HTTPBasicAuth(self.config['username'],
                                                    self.config['password']),
-                                data=None, headers=headers, 
+                                data=None, headers=headers,
                                 timeout=timeout)
+        if resp is not None:
+            if resp.status_code == 200:
+                logging.debug("found {}".format(url))
+            elif resp.status_code == 404:
+                logging.debug("not found {}".format(url))
+            else:
+                logging.error("error getting {} message {}".format(url,resp.content))
+
 
         return (resp)
 
@@ -123,6 +132,12 @@ class Controller():
                                  data=data, headers=headers,
                                  timeout=self.config['timeout'])
 
+        if resp is not None:
+            if resp.status_code == 204:
+                logging.debug("added {} {}".format(url,data))
+            else:
+                logging.error("error posting {} data {} message {}".format(url,data,resp.content))
+
         return (resp)
 
     def http_put_request(self, url, data, headers=None):
@@ -150,6 +165,12 @@ class Controller():
                                                    self.config['password']),
                                 data=data, headers=headers,
                                 timeout=self.config['timeout'])
+
+        if resp is not None:
+            if resp.status_code == 200:
+                logging.debug("added {} {}".format(url,data))
+            else:
+                logging.error("error posting {} data {} message {}".format(url,data,resp.content))
 
         return (resp)
 
@@ -179,6 +200,13 @@ class Controller():
                                    data=data, headers=headers,
                                    timeout=self.config['timeout'])
 
+        if resp is not None:
+            if resp.status_code == 200:
+                logging.debug("delete {}".format(url))
+            elif resp.status_code == 404:
+                logging.debug("delete {}".format(url))
+            else:
+                logging.error("error posting {} message {}".format(url,resp.content))
         return (resp)
 
     def get_base_url(self):
