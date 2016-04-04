@@ -5,12 +5,11 @@ import os
 from flask.ext.script import Manager, Server
 from flask.ext.script.commands import ShowUrls, Clean
 from www import create_app
-from www.models import db, User
 
 # default to dev config because no one should use this in
 # production anyway
 env = os.environ.get('WWW_ENV', 'dev')
-app = create_app('www.settings.%sConfig' % env.capitalize(), env=env)
+app = create_app('www.settings.%sConfig' % env.capitalize())
 
 manager = Manager(app)
 manager.add_command("server", Server())
@@ -24,16 +23,7 @@ def make_shell_context():
         in the context of the app
     """
 
-    return dict(app=app, db=db, User=User)
-
-
-@manager.command
-def createdb():
-    """ Creates a database with all of the tables defined in
-        your SQLAlchemy models
-    """
-
-    db.create_all()
+    return dict(app=app)
 
 if __name__ == "__main__":
     manager.run()

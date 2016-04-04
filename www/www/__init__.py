@@ -10,13 +10,10 @@ from webassets.loaders import PythonLoader as PythonAssetsLoader
 
 from www.controllers.main import main
 from www import assets
-from www.models import db
 
 from www.extensions import (
     cache,
-    assets_env,
-    debug_toolbar,
-    login_manager
+    assets_env
 )
 
 
@@ -38,14 +35,6 @@ def create_app(object_name):
 
     # initialize the cache
     cache.init_app(app)
-
-    # initialize the debug tool bar
-    debug_toolbar.init_app(app)
-
-    # initialize SQLAlchemy
-    db.init_app(app)
-
-    login_manager.init_app(app)
 
     # Import and register the different asset bundles
     assets_env.init_app(app)

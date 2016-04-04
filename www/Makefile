@@ -10,8 +10,8 @@ help:
 env:
 	sudo easy_install pip && \
 	pip install virtualenv && \
-	virtualenv env && \
-	. env/bin/activate && \
+	virtualenv venv && \
+	. venv/bin/activate && \
 	make deps
 
 deps:
@@ -21,7 +21,7 @@ clean:
 	python manage.py clean
 
 lint:
-	flake8 --exclude=env .
+	flake8 --exclude=venv .
 
 test:
 	py.test tests
