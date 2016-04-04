@@ -232,7 +232,7 @@ class SR():
         logging.debug("Updating SR flows")
 
         # grab new flows
-        new = self.srm.get_topology()
+        new = self.get_topology()
 
         # Spin through nodes in the old topology
         for n in old:
