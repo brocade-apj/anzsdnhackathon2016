@@ -52,7 +52,7 @@ class Client():
         """ get flows from Segment Routing Manager """
         resp = self.ctrl.http_get_request(
                    self.ctrl.get_config_url()
-                        + "/opendaylight-inventory:nodes/node/{}/table/0".format(name))
+                        + "/opendaylight-inventory:nodes/node/{}/table/1".format(name))
 
         if resp is not None:
             if resp.status_code == 200:
@@ -78,7 +78,7 @@ class Client():
 
         resp = self.ctrl.http_get_request(
                    self.ctrl.get_config_url()
-                   + "/opendaylight-inventory:nodes/node/{}/table/0/flow/{}".format(name,id))
+                   + "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id))
 
         if resp is not None:
             if resp.status_code == 200:
@@ -229,7 +229,7 @@ class Client():
 
         resp = self.ctrl.http_put_request(
                  self.ctrl.get_config_url()+
-                 "/opendaylight-inventory:nodes/node/{}/table/0/flow/{}".format(name,id)
+                 "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id)
                  ,json.dumps(payload))
 
         # Check response
@@ -251,7 +251,7 @@ class Client():
 
         resp = self.ctrl.http_delete_request(
                    self.ctrl.get_config_url()+
-                   "/opendaylight-inventory:nodes/node/{}/table/0/flow/{}".format(name,id))
+                   "/opendaylight-inventory:nodes/node/{}/table/1/flow/{}".format(name,id))
 
         return self.get_flow(name,id)
 
