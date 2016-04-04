@@ -119,11 +119,10 @@ class Client():
         port = kwargs['flow']['port']
         penultimate = kwargs['flow']['penultimate']
 
-        if 'id' in kwargs['flow']:
-            id = "src-" + id
+        if 'flow_id' in kwargs['flow']:
+            id = "src-" + kwargs['flow']['flow_id']
         else:
             id = "sra-" + name + "-" + str(port) + "-" + str(label)
-
 
         payload = { "flow-node-inventory:flow": [
                     {
