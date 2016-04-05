@@ -43,6 +43,7 @@ function createService() {
     data: JSON.stringify(payload),
   })
   .done(function(data) {
+    showMessage("Service "+data._id+" successfully created");
     console.log(data);
   });
 }
@@ -53,6 +54,7 @@ function deleteService(serviceID, $obj) {
     type: 'DELETE'
   })
   .done(function(data) {
+    showMessage("Service "+serviceID+" successfully deleted");
     $obj.remove()
     console.log(data);
   });
@@ -67,4 +69,11 @@ function stopSorting() {
     $(this).append($element);
     $(this).trigger("change");
   });
+}
+
+function showMessage(message) {
+  $('#message-alert').show().find('#message').text(message);
+  setTimeout(function(){ 
+    $('#message-alert').hide().find('#message').text("");
+  }, 3000);
 }
