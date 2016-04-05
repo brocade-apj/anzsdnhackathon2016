@@ -13,10 +13,8 @@ class Service(Resource):
     return {'hello': 'world'}
 
   def delete(self, id):
-    print "We are trying to delete %s" % (id)
     services = mongo.db.services
     service_obj = services.find_one({'_id': ObjectId(id)})
-    print service_obj
 
     service = {
       'ingress_switch': str(service_obj['ingress_switch']),
@@ -24,8 +22,6 @@ class Service(Resource):
       'egress_switch': str(service_obj['egress_switch']),
       'egress_port': str(service_obj['egress_port'])
     }
-
-    print service
 
     services.delete_one({'_id': ObjectId(id)})
 
@@ -45,8 +41,7 @@ class Services(Resource):
     parser.add_argument('egress-switch', type=str)
     parser.add_argument('ingress-port', type=str)
     parser.add_argument('egress-port', type=str)
-
-    json = request.get_json()
+    parser.add_argument('waypoints', type=list, location='json')
 
     args = parser.parse_args()
 
@@ -56,18 +51,15 @@ class Services(Resource):
       'egress_switch': args['egress-switch'],
       'egress_port': args['egress-port']
     }
-    if json['waypoints']:
-      service['waypoints'] = []
-      for waypoint in json['waypoints']:
-        service['waypoints'].append(str(waypoint))
+
+    if args['waypoints']:
+      service['waypoints'] = [str(waypoint) for waypoint in args['waypoints']]
 
     services = mongo.db.services
     db_id = services.insert_one(service).inserted_id
 
     srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
-    
-    print service
-    
+        
     srm.add_service(service=service)
 
     service['_id'] = str(service['_id'])
