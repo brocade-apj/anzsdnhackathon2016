@@ -10,7 +10,10 @@ main = Blueprint('main', __name__)
 @cache.cached(timeout=1000)
 def home():
     srm = SR()
-    return render_template('index.html', topo=srm.get_topology())
+    topo = []
+    for node in srm.get_topology():
+      topo.append(str(node))
+    return render_template('index.html', topo=topo)
 
 @main.route('/services')
 @cache.cached(timeout=1000)
