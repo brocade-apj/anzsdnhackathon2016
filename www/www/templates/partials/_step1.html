@@ -15,9 +15,9 @@
                     <label for="waypoints" class="col-sm-2 control-label">Nodes</label>
                     <div class="col-sm-10">
                         <select name="waypoints" id="waypoints" class="form-control" multiple="multiple">
-                            <option value="">-- Select One --</option>
-                            <option value="">-- Select Two --</option>
-                            <option value="">-- Select Three --</option>
+                            {% for node in topo: %}
+                            <option value="{{node}}">{{node}}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>

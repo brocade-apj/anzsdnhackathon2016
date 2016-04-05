@@ -19,11 +19,12 @@ class Services(Resource):
 
   def post(self):
     parser = reqparse.RequestParser()
-    parser.add_argument('ingress-switch')
-    parser.add_argument('egress-switch')
-    parser.add_argument('ingress-port')
-    parser.add_argument('egress-port')
-    parser.add_argument('waypoints')
+    parser.add_argument('ingress-switch', type=str)
+    parser.add_argument('egress-switch', type=str)
+    parser.add_argument('ingress-port', type=str)
+    parser.add_argument('egress-port', type=str)
+
+    json = request.get_json()
 
     args = parser.parse_args()
 
@@ -33,14 +34,18 @@ class Services(Resource):
       'egress_switch': args['egress-switch'],
       'egress_port': args['egress-port']
     }
-    if args['waypoints']:
-      service['waypoints'] = args['waypoints']
+    if json['waypoints']:
+      service['waypoints'] = []
+      for waypoint in json['waypoints']:
+        service['waypoints'].append(str(waypoint))
 
     services = mongo.db.services
     db_id = services.insert_one(service).inserted_id
 
     srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
+    
     print service
+    
     srm.add_service(service=service)
 
     service['_id'] = str(service['_id'])
