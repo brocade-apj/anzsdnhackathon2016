@@ -6,6 +6,13 @@ jQuery(document).ready(function($) {
   $('#sr-wizard').on('finished.fu.wizard', function (e, data) {
     createService();
   });
+
+  $('.delete-service').on('click', function(e) {
+    var serviceID = $(this).data('service-id');
+    console.log(serviceID);
+    panel = $('#service-panel-'+serviceID)
+    deleteService(serviceID, panel);
+  })
 });
 
 function getFormData() {
@@ -38,10 +45,17 @@ function createService() {
   .done(function(data) {
     console.log(data);
   });
-  
-  // $.post('/api/v1/services', payload, function(data, textStatus, xhr) {
-  //   console.log(data);
-  // }, 'json');
+}
+
+function deleteService(serviceID, $obj) {
+  $.ajax({
+    url: '/api/v1/services/'+serviceID,
+    type: 'DELETE'
+  })
+  .done(function(data) {
+    $obj.remove()
+    console.log(data);
+  });
 }
 
 function stopSorting() {

@@ -9,10 +9,11 @@
       <h1>Services</h1>
       <p>The following is a list of services within the network</p>
       <div class="jumbotron">
-        <div class="panel panel-primary">
+        {% for service in services %}
+        <div class="panel panel-primary" id="service-panel-{{service._id}}">
           <div class="panel-heading">
-            <h3 class="panel-title pull-left">Service: </h3>
-            <button type="button" class="btn btn-danger pull-right">
+            <h3 class="panel-title pull-left">Service: {{service._id}}</h3>
+            <button type="button" class="btn btn-danger pull-right delete-service" data-service-id="{{service._id}}">
               Delete
             </button>
             <div class="clearfix"></div>
@@ -20,18 +21,19 @@
           <div class="panel-body">
             <dl class="dl-horizontal">
               <dt>Ingress Switch</dt>
-              <dd>Ingress Switch Value</dd>
+              <dd>{{service.ingress_switch}}</dd>
               <dt>Ingress Port</dt>
-              <dd>Ingress Port Value</dd>
+              <dd>{{service.ingress_port}}</dd>
               <dt>Egress Switch</dt>
-              <dd>Egress Switch Value</dd>
+              <dd>{{service.egress_switch}}</dd>
               <dt>Egress Port</dt>
-              <dd>Egress Port Value</dd>
+              <dd>{{service.egress_port}}</dd>
               <dt>Waypoints</dt>
-              <dd>Waypoints Value</dd>
+              <dd>{{service.waypoints | join(', ')}}</dd>
             </dl>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </div>

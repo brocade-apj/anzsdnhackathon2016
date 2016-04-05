@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for
 from www.extensions import cache
 from srmanager.sr import SR
+from www.extensions import mongo
 
 main = Blueprint('main', __name__)
 
@@ -14,4 +15,5 @@ def home():
 @main.route('/services')
 @cache.cached(timeout=1000)
 def services():
-    return render_template('services.html')
+    services = mongo.db.services.find()
+    return render_template('services.html', services=services)

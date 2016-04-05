@@ -2,6 +2,9 @@ from flask import request
 from flask_restful import reqparse, abort, Resource, Api
 from www.extensions import mongo
 from srmanager.client import Client
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+
 
 api = Api(prefix='/api/v1')  
 
@@ -10,12 +13,31 @@ class Service(Resource):
     return {'hello': 'world'}
 
   def delete(self, id):
-    # Delete something
-    return {'hello': 'world'}, 204
+    print "We are trying to delete %s" % (id)
+    services = mongo.db.services
+    service_obj = services.find_one({'_id': ObjectId(id)})
+    print service_obj
+
+    service = {
+      'ingress_switch': str(service_obj['ingress_switch']),
+      'ingress_port': str(service_obj['ingress_port']),
+      'egress_switch': str(service_obj['egress_switch']),
+      'egress_port': str(service_obj['egress_port'])
+    }
+
+    print service
+
+    services.delete_one({'_id': ObjectId(id)})
+
+    srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
+    srm.delete_service(service=service)
+
+    return service, 204
 
 class Services(Resource):
   def get(self):
-    return {'hello': 'world'}
+    services = mongo.db.services
+    return dumps(services.find().pretty())
 
   def post(self):
     parser = reqparse.RequestParser()
