@@ -318,7 +318,7 @@ class Client():
         if 'waypoints' in kwargs['service']:
              waypoints = kwargs['service']['waypoints']
              kwargs['service']['waypoints'] = []
-             for waypoint in reversed(kwargs['service']['waypoints']):
+             for waypoint in reversed(waypoints):
                  kwargs['service']['waypoints'].append(waypoint)
         self.add_service_unidirectional(**kwargs)
 
