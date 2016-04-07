@@ -14,7 +14,7 @@ class DevConfig(Config):
     ASSETS_DEBUG = True
 
     MONGO_HOST = "127.0.0.1"
-    MONGO_PORT = 28017
+    MONGO_PORT = 27017
     MONGO_DBNAME = 'dev_sr'
 
 
