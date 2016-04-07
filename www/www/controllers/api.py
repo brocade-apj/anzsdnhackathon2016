@@ -6,7 +6,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 
 
-api = Api(prefix='/api/v1')  
+api = Api(prefix='/api/v1')
 
 class Service(Resource):
   def get(self, id):
@@ -25,7 +25,7 @@ class Service(Resource):
 
     services.delete_one({'_id': ObjectId(id)})
 
-    srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
+    srm = Client(config={'ip': '127.0.0.1', 'port': 8181, 'username': 'admin', 'password': 'admin'})
     srm.delete_service(service=service)
 
     return service, 204
@@ -58,8 +58,8 @@ class Services(Resource):
     services = mongo.db.services
     db_id = services.insert_one(service).inserted_id
 
-    srm = Client(config={'ip': '202.9.5.219', 'port': 8181, 'username': 'admin', 'password': 'admin'})
-        
+    srm = Client(config={'ip': '127.0.0.1', 'port': 8181, 'username': 'admin', 'password': 'admin'})
+
     srm.add_service(service=service)
 
     service['_id'] = str(service['_id'])
